@@ -9,7 +9,9 @@ import astropy.io.fits as apfits
 #
 # Keywords:
 # cat_name - name of the target gaussclumps catalog in .fits format (string).
-# ref_name - name of the reference catalog in .fits format (string).
+#          -- required
+# ref_name - name of the reference gaussclumps catalog in .fits format (string).
+#          -- required
 # minpeak - minimum brightness of a source to consider matching it (Jy/Beam).
 # maxrad - maximum effective radius of a source to consider matching it (").
 # maxsep - maximum allowed separation between two sources to match them (").
@@ -22,7 +24,7 @@ import astropy.io.fits as apfits
 # err - a 4-element array that gives the standard deviation in each of the above
 #           measurements, respectively.
 
-def source_match(cat_name, ref_name, minpeak, maxrad, maxsep):
+def source_match(cat_name, ref_name, minpeak=0.2, maxrad=30, maxsep=10):
 
     #Read in the reference catalog and prepare the data.
     ref_data = apfits.getdata(ref_name, 0)

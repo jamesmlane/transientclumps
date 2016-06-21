@@ -8,12 +8,12 @@ import pdb
 # output is "img_name"_crop.sdf
 #
 # Keywords:
-# img_name - name of the image.
-# crop_radius - radius, in arcseconds, of the crop.
-# crop_method - method used for the crop
-# rm_files - Delete intermediate files? (Boolean)
+# img_name - name of the image (string). -- required
+# crop_radius - radius, in arcseconds, of the crop (int).
+# crop_method - method used for the crop (string).
+# See SUN
 
-def crop_image(img_name, crop_radius, crop_method):
+def crop_image(img_name, crop_radius=1200, crop_method='CIRCLE'):
 
     #Make the cropping parameter file.
     crop_parms = open('crop.ini', 'w')
@@ -35,8 +35,8 @@ def crop_image(img_name, crop_radius, crop_method):
 # output is "img_name"_smooth.sdf
 #
 # Keywords:
-# img_name - name of the image.
-# kern_name - name of the kernal .sdf to smooth with.
+# img_name - name of the image (string). -- required
+# kern_name - name of the kernal .sdf to smooth with (string). -- required
 
 def smooth_image(img_name, kern_name):
 
@@ -72,8 +72,10 @@ def smooth_image(img_name, kern_name):
 # is "img_name"_jypbm.sdf
 #
 # Keywords:
-# img_name - name of the image.
-# jypbm_conv - conversion factor for Jy/Beam
+# img_name - name of the image (string). -- required
+# jypbm_conv - Conversion factor to turn image units into Jy/Beam (float).
+# Assumes maps in mJy/sq.arcsecs. Conversion factor from
+# http://pipelinesandarchives.blogspot.ca/2012/02/scuba-2-calibration-redux.html
 
 def unitconv_image(img_name, jypbm_conv):
 
@@ -90,16 +92,18 @@ def unitconv_image(img_name, jypbm_conv):
 # and unit conversions.
 #
 # Keywords:
-# img_name - name of the image.
-# beam_fwhm - FWHM of the instrument beam.
-# crop_radius - radius of the crop.
-# kern_name - smoothing kernal name.
-# kern_fwhm - size of the smoothing kernal FWHM.
-# jypbm_conv - Conversion factor to turn image units into Jy/Beam.
-# crop_method - method for cropping.
+# img_name - name of the image (string). --required
+# kern_name - smoothing kernal name (string). --required
+# kern_fwhm - size of the smoothing kernal FWHM (float). --required
+# jypbm_conv - Conversion factor to turn image units into Jy/Beam (float).
+# Assumes maps in mJy/sq.arcsecs. Conversion factor from:
+# http://pipelinesandarchives.blogspot.ca/2012/02/scuba-2-calibration-redux.html
+# beam_fwhm - FWHM of the instrument beam (float).
+# crop_radius - radius of the crop (int).
+# crop_method - method for cropping (string).
 
-def prepare_image(img_name, beam_fwhm, crop_radius, kern_name, kern_fwhm,
-                  jypbm_conv, crop_method='CIRCLE'):
+def prepare_image(img_name, kern_name, kern_fwhm, jypbm_conv=0.229,
+                  beam_fwhm=14.5, crop_radius=1200, crop_method='CIRCLE'):
 
     #Crop the image.
     crop_image(img_name, crop_radius, crop_method)
