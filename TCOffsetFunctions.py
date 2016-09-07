@@ -17,7 +17,7 @@ import astropy.io.fits as apfits
 # 	If a source has one object that is less than 4 arcseconds away - keep it, if not, throw the source away= CULL
 #        then go back to CODA
 #
-#   Then find averages with what’s left: avg_delta_x, avg_delta_y and peak/radius ratios
+#   Then find averages with what's left: avg_delta_x, avg_delta_y and peak/radius ratios
 #
 #
 # Keywords:
@@ -148,7 +148,7 @@ def cull_matches(source_xoffs,source_yoffs,cutoff):
 # err - a 4-element array that gives the standard deviation in each of the above
 #           measurements, respectively.
 
-def source_match(cat_name, ref_name, minpeak=0.2, maxrad=30, maxsep=10, cutoff=4):
+def source_match(cat_name, ref_name, minpeak=0.2, maxrad=30, maxsep=10, cutoff=4, pix_scale=3.0):
 
     #Read in the reference catalog and prepare the data.
     ref_data = apfits.getdata(ref_name, 0)
@@ -162,7 +162,7 @@ def source_match(cat_name, ref_name, minpeak=0.2, maxrad=30, maxsep=10, cutoff=4
     #Calculate the effective radius, the square root of the two FWHM multiplied
     # together. Multiply by 1.5 to account for FWHM is diameter but want radius (divide by 2),
     # and units are pixels but want arcseconds (multiply by 3 - SHOULD MAKE THIS PIX_SCALE BECAUSE 450 DATA HAS 2 ARCSECOND PIXELS).
-    ref_rvals = np.sqrt( np.multiply( ref_fwhm1vals, ref_fwhm2vals ) ) * 1.5
+    ref_rvals = np.sqrt( np.multiply( ref_fwhm1vals, ref_fwhm2vals ) ) * pix_scale/2.0
 
     #Keep an array to track index of successful matches in the target catalog.
     matched_sources = np.zeros(ref_nsources)
@@ -178,7 +178,7 @@ def source_match(cat_name, ref_name, minpeak=0.2, maxrad=30, maxsep=10, cutoff=4
     targ_fwhm2vals = targ_data['GCFWHM2']
 
     #Calculate effective radius, same as above CHANGE THIS TOO, LIKE ABOVE.
-    targ_rvals = np.sqrt( np.multiply( targ_fwhm1vals, targ_fwhm2vals ) ) * 1.5
+    targ_rvals = np.sqrt( np.multiply( targ_fwhm1vals, targ_fwhm2vals ) ) * pix_scale/2.0
 
     #Keep an array to track whether or not target catalog sources have found
     # a match, because they can't match more than once. Brightest sources
@@ -312,11 +312,11 @@ def source_match(cat_name, ref_name, minpeak=0.2, maxrad=30, maxsep=10, cutoff=4
             std_peakr = np.std(matched_peakr)
             std_rr = np.std(matched_rr)
 
-        return [avg_xoff,avg_yoff,avg_peakr,avg_rr], [std_xoff,std_yoff,std_peakr,std_rr], [len(culled_ind)], [number_of_sources_matched]
+        return [avg_xoff,avg_yoff,avg_peakr,avg_rr], [std_xoff,std_yoff,std_peakr,std_rr], [len(culled_ind)], [number_of_sources_matched], np.where(matched_sources != -1), corresponding_targ_sources,np.where(matched_sources != -1)[0][culled_ind],corresponding_targ_sources[culled_ind]
     ##fi
 
     #If no sources found return None.
     if n_matched == 0:
         print('\nNo sources found.\n')
-        return [None,None,None,None], [None,None,None,None],[0], [0]
+        return [None,None,None,None], [None,None,None,None],[0], [0], [0], [0], [0], [0]
 #def
