@@ -148,7 +148,7 @@ def cull_matches(source_xoffs,source_yoffs,cutoff):
 # err - a 4-element array that gives the standard deviation in each of the above
 #           measurements, respectively.
 
-def source_match(cat_name, ref_name, minpeak=0.2, maxrad=30, maxsep=10, cutoff=4, pix_scale=3.0):
+def source_match(cat_name, ref_name, minpeak=0.2, maxrad=15, maxsep=10, cutoff=4, pix_scale=3.0):
 
     #Read in the reference catalog and prepare the data.
     ref_data = apfits.getdata(ref_name, 0)
@@ -190,6 +190,8 @@ def source_match(cat_name, ref_name, minpeak=0.2, maxrad=30, maxsep=10, cutoff=4
 
         #Test a radius and peak condition here:
         if ref_rvals[i] > maxrad: continue
+        if ref_fwhm1vals[i]*pix_scale/2.0>maxrad:continue
+        if ref_fwhm2vals[i]*pix_scale/2.0>maxrad:continue
         if ref_peakvals[i] < minpeak: continue
 
         #Declare the reference coordinates.
